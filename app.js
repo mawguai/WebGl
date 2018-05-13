@@ -3,9 +3,12 @@ var vertexShaderText =
         'precision mediump float;',
         '',
         'attribute vec2 vertPosition;',
+        'attribute vec3 vertColor;',
+        'varying vec3 fragColor;',
         '',
         'void main()',
         '{',
+        '   fragColor = vertColor;',
         '   gl_Position = vec4(vertPosition, 0.0, 1.0);',
         '}'
     ].join('\n');
@@ -14,9 +17,11 @@ var fragmentShaderText =
     [
         'precision mediump float;',
         '',
+        'varying vec3 fragColor;',
+        '',
         'void main()',
         '{',
-        '   gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);',
+        '   gl_FragColor = vec4(fragColor, 1.0);',
         '}'
     ].join('\n');
 
@@ -69,7 +74,9 @@ var initDemo = function() {
 
     var triangleVertices =
         [ //X, Y
-
+            0.0, 0.5,   1.0, 1.0, 0.0,
+            -0.5, -0.5, 0.7, 0.0, 1.0,
+            0.5, -0.5,  0.1, 1.0, 0.6
         ];
 
     var triangleVertexBufferObject = gl.createBuffer();
@@ -77,17 +84,28 @@ var initDemo = function() {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
 
     var positionAttributeLocation = gl.getAttribLocation(program, 'vertPosition');
+    var colorAttributeLocation = gl.getAttribLocation(program, 'vertColor');
     gl.vertexAttribPointer(
         positionAttributeLocation,
         2,
         gl.FLOAT,
         gl.FALSE,
-        2 * Float32Array.BYTES_PER_ELEMENT,
+        5 * Float32Array.BYTES_PER_ELEMENT,
         0
     );
 
+    gl.vertexAttribPointer(
+        colorAttributeLocation,
+        3,
+        gl.FLOAT,
+        gl.FALSE,
+        5 * Float32Array.BYTES_PER_ELEMENT,
+        2 * Float32Array.BYTES_PER_ELEMENT
+    );
+
     gl.enableVertexAttribArray(positionAttributeLocation);
+    gl.enableVertexAttribArray(colorAttributeLocation);
 
     gl.useProgram(program);
-    gl.drawArrays(); // set the type of the poly and the number of vertices
+    gl.drawArrays(gl.TRIANGLES, 0, 3); // set the type of the poly and the number of vertices
 }
