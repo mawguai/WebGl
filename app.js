@@ -121,11 +121,27 @@ var initDemo = function() {
     mat4.identity(worldMatrix);
 
     mat4.lookAt(viewMatrix, [0, 0, -5], [0, 0, 0], [0, 1, 0]);
-    mat4.perspective(projMatrix, glMatrix.toRadian(45), 4/3, 0.1, 1000.0);
+    mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
 
     gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
     gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
 
     gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    var identityMatrix = new Float32Array(16);
+    mat4.identity(identityMatrix);
+    var angle = 0;
+    var loop = function () {
+        angle = performance.now() / 1000 / 6 * Math.PI;
+        mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]);
+        gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+
+        gl.clearColor(0.75, 0.85, 0.8, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
 }
