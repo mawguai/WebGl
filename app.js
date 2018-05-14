@@ -119,8 +119,9 @@ var initDemo = function() {
     var viewMatrix = new Float32Array(16);
 
     mat4.identity(worldMatrix);
-    mat4.identity(projMatrix);
-    mat4.identity(viewMatrix);
+
+    mat4.lookAt(viewMatrix, [0, 0, -5], [0, 0, 0], [0, 1, 0]);
+    mat4.perspective(projMatrix, glMatrix.toRadian(45), 4/3, 0.1, 1000.0);
 
     gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
     gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
