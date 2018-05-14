@@ -2,14 +2,17 @@ var vertexShaderText =
     [
         'precision mediump float;',
         '',
-        'attribute vec2 vertPosition;',
+        'attribute vec3 vertPosition;',
         'attribute vec3 vertColor;',
+        'uniform  mat4 mWorld;',
+        'uniform  mat4 mView;',
+        'uniform  mat4 mProj;',
         'varying vec3 fragColor;',
         '',
         'void main()',
         '{',
         '   fragColor = vertColor;',
-        '   gl_Position = vec4(vertPosition, 0.0, 1.0);',
+        '   gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);',
         '}'
     ].join('\n');
 
@@ -73,10 +76,10 @@ var initDemo = function() {
     }
 
     var triangleVertices =
-        [ //X, Y
-            0.0, 0.5,   1.0, 1.0, 0.0,
-            -0.5, -0.5, 0.7, 0.0, 1.0,
-            0.5, -0.5,  0.1, 1.0, 0.6
+        [ //X, Y, Z
+            0.0, 0.5, 0.0,   1.0, 1.0, 0.0,
+            -0.5, -0.5, 0.0, 0.7, 0.0, 1.0,
+            0.5, -0.5, 0.0, 0.1, 1.0, 0.6
         ];
 
     var triangleVertexBufferObject = gl.createBuffer();
@@ -87,10 +90,10 @@ var initDemo = function() {
     var colorAttributeLocation = gl.getAttribLocation(program, 'vertColor');
     gl.vertexAttribPointer(
         positionAttributeLocation,
-        2,
+        3,
         gl.FLOAT,
         gl.FALSE,
-        5 * Float32Array.BYTES_PER_ELEMENT,
+        6 * Float32Array.BYTES_PER_ELEMENT,
         0
     );
 
@@ -99,13 +102,29 @@ var initDemo = function() {
         3,
         gl.FLOAT,
         gl.FALSE,
-        5 * Float32Array.BYTES_PER_ELEMENT,
-        2 * Float32Array.BYTES_PER_ELEMENT
+        6 * Float32Array.BYTES_PER_ELEMENT,
+        3 * Float32Array.BYTES_PER_ELEMENT
     );
 
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.enableVertexAttribArray(colorAttributeLocation);
 
     gl.useProgram(program);
+    var matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
+    var matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+    var matViewUniformLocation = gl.getUniformLocation(program, 'mView');
+
+    var projMatrix = new Float32Array(16);
+    var worldMatrix = new Float32Array(16);
+    var viewMatrix = new Float32Array(16);
+
+    mat4.identity(worldMatrix);
+    mat4.identity(projMatrix);
+    mat4.identity(viewMatrix);
+
+    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
+    gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
+
+    gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
