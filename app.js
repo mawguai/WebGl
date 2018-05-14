@@ -190,13 +190,14 @@ var initDemo = function() {
     gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
 
     gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
+    gl.enable(gl.DEPTH_TEST);
 
     var identityMatrix = new Float32Array(16);
     mat4.identity(identityMatrix);
     var angle = 0;
     var loop = function () {
         angle = performance.now() / 1000 / 6 * Math.PI;
-        mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]);
+        mat4.rotate(worldMatrix, identityMatrix, angle, [0.2, 1, 0.4]);
         gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
         gl.clearColor(0.75, 0.85, 0.8, 1.0);
