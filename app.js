@@ -107,5 +107,5 @@ var initDemo = function() {
     gl.enableVertexAttribArray(colorAttributeLocation);
 
     gl.useProgram(program);
-    gl.drawArrays(gl.TRIANGLES, 0, 3); // set the type of the poly and the number of vertices
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
